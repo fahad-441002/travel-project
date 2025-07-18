@@ -74,6 +74,21 @@ $base = '/hassan';
     </main>
 
     <?php require 'includes/components/footer.php'; ?>
+
+    <script>
+        // Toggle dropdown
+        function toggleDropdown() {
+            document.getElementById("userDropdown").classList.toggle("open");
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener("click", function(e) {
+            const dropdown = document.getElementById("userDropdown");
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove("open");
+            }
+        });
+    </script>
 </body>
 
 </html>

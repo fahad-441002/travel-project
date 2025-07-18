@@ -165,18 +165,56 @@ while ($d = $allDestinations->fetch_assoc()) {
         const slug = Object.keys(destinationsData).find(key =>
             destinationsData[key].title === button.dataset.destination);
 
+        const status = button.dataset.status;
+
+        // Read-only logic (only if Cancelled)
+        const isReadOnly = (status === 'Cancelled');
+
+        // Fill modal values
         document.getElementById('booking-id').value = button.dataset.id;
         document.getElementById('booking-user').textContent = button.dataset.user;
         document.getElementById('booking-message').textContent = button.dataset.message;
         document.getElementById('booking-date').value = button.dataset.date;
         document.getElementById('booking-persons').value = button.dataset.persons;
-        document.getElementById('booking-status').value = button.dataset.status;
-        reasonInput.value = button.dataset.status === 'Cancelled' ? (button.dataset.reason || '') : '';
-
+        reasonInput.value = (status === 'Cancelled') ? (button.dataset.reason || '') : '';
         destSelect.value = slug;
         updateTotal();
-        toggleReasonBox();
+
+        // Update status options
+        statusSelect.innerHTML = ''; // Clear existing options
+
+        // Only allow "Confirmed" or "Cancelled" if status was already Confirmed
+        if (status === 'Confirmed') {
+            statusSelect.innerHTML += '<option selected>Confirmed</option>';
+            statusSelect.innerHTML += '<option>Cancelled</option>';
+        }
+        // Allow all options if current is Pending
+        else if (status === 'Pending') {
+            statusSelect.innerHTML += '<option>Pending</option>';
+            statusSelect.innerHTML += '<option>Confirmed</option>';
+            statusSelect.innerHTML += '<option>Cancelled</option>';
+            statusSelect.value = 'Pending';
+        }
+        // If Cancelled, show only Cancelled
+        else if (status === 'Cancelled') {
+            statusSelect.innerHTML += '<option selected>Cancelled</option>';
+        }
+
+        // Show/hide cancel reason
+        reasonContainer.style.display = (status === 'Cancelled') ? 'block' : 'none';
+
+        // Enable/disable fields
+        destSelect.disabled = isReadOnly;
+        document.getElementById('booking-date').readOnly = isReadOnly;
+        personsInput.readOnly = isReadOnly;
+        statusSelect.disabled = isReadOnly;
+        reasonInput.readOnly = isReadOnly;
+
+        // Submit button visibility
+        const submitBtn = viewModal.querySelector('button[type="submit"]');
+        submitBtn.style.display = isReadOnly ? 'none' : 'inline-block';
     });
+
 
     statusSelect.addEventListener('change', toggleReasonBox);
     destSelect.addEventListener('change', updateTotal);

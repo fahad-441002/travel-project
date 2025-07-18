@@ -72,7 +72,7 @@ function sendBookingEmails($user, $destination, $booking)
 
         // Send to admin
         $mail->clearAddresses();
-        $mail->addAddress('hassanaltaf468348@gmail.com', 'Admin'); // Admin email
+        $mail->addAddress('mfd84739@gmail.com', 'Admin'); // Admin email
         $mail->Subject = "🧾 New Booking from {$userName}";
         $mail->Body    = "
             <h3>New Booking Details:</h3>

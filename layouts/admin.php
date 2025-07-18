@@ -1,6 +1,5 @@
 <?php
 $base = '/hassan';
-
 $pageTitle = $pageTitle ?? 'Dashboard';
 ?>
 
@@ -11,50 +10,81 @@ $pageTitle = $pageTitle ?? 'Dashboard';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><?= $pageTitle ?></title>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
         }
 
+        .wrapper {
+            display: flex;
+        }
+
         .sidebar {
             width: 250px;
-            height: 100vh;
-            position: fixed;
-            background-color: #343a40;
+            background-color: #212529;
             color: white;
-            padding-top: 20px;
+            transition: all 0.3s;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
             overflow-y: auto;
+            z-index: 10000;
         }
 
         .sidebar .logo {
             text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 30px;
-            color: #fff;
+            font-size: 1.7rem;
+            font-weight: 600;
+            margin: 20px 0;
+            color: #ffffff;
         }
 
-        .sidebar a {
+        .sidebar a,
+        .accordion-button {
             color: #adb5bd;
             text-decoration: none;
-            padding: 10px 20px;
             display: block;
+            padding: 10px 20px;
+            font-size: 15px;
         }
 
-        .sidebar a:hover {
-            background-color: #495057;
-            color: white;
+        .sidebar a:hover,
+        .accordion-button:hover {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        .accordion-button {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .accordion-button:not(.collapsed)::after {
+            transform: rotate(90deg);
+        }
+
+        .accordion-button::after {
+            margin-left: auto;
+            transition: transform 0.2s;
+            filter: invert(1);
+        }
+
+        .accordion-body a {
+            padding-left: 40px;
+            font-size: 14px;
         }
 
         .main {
             margin-left: 250px;
             padding: 20px;
             background-color: #f8f9fa;
-            height: 100vh;
-            overflow-y: auto;
+            flex-grow: 1;
         }
 
         .topbar {
@@ -67,89 +97,133 @@ $pageTitle = $pageTitle ?? 'Dashboard';
             padding: 0 20px;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 1001;
         }
 
-        .dropdown-toggle::after {
-            margin-left: 0.5em;
+        #sidebarToggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            #sidebarToggle {
+                display: inline-block;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">MyDashboard</div>
+    <div class="wrapper">
 
-        <?php if ($_SESSION['user']['role'] === 'admin'): ?>
-            <!-- Admin Sidebar -->
-            <a href="<?= $base ?>/admin/dashboard">🏠 Dashboard</a>
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">🌍 MyDashboard</div>
 
-            <div class="accordion" id="menuAccordion">
-                <div class="accordion-item bg-dark border-0">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button collapsed bg-dark text-white" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#collapseOne">
-                            🗺️ Destination Pages
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#menuAccordion">
-                        <div class="accordion-body bg-dark p-0">
-                            <a href="<?= $base ?>/admin/destinations/create" class="ps-4 d-block">Create</a>
-                            <a href="<?= $base ?>/admin/destinations/manage" class="ps-4 d-block">Manage</a>
+            <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                <a href="<?= $base ?>/admin/dashboard">🏠 Dashboard</a>
+
+                <div class="accordion accordion-flush" id="adminMenu">
+                    <div class="accordion-item bg-dark border-0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed text-white" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#destinationMenu">
+                                🗺️ Destination Pages
+                            </button>
+                        </h2>
+                        <div id="destinationMenu" class="accordion-collapse collapse" data-bs-parent="#adminMenu">
+                            <div class="accordion-body p-0">
+                                <a href="<?= $base ?>/admin/destinations/create">➕ Create</a>
+                                <a href="<?= $base ?>/admin/destinations/manage">📋 Manage</a>
+                                <a href="<?= $base ?>/admin/destinations/highlights">🎬 Highlights</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="<?= $base ?>/admin/bookings/manage">📅 Bookings</a>
+                    <a href="<?= $base ?>/admin/messages">💬 Messages</a>
+                    <a href="<?= $base ?>/admin/users/manage">👥 Users</a>
+
+                    <div class="accordion-item bg-dark border-0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed text-white" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#settingsMenu">
+                                ⚙️ Settings
+                            </button>
+                        </h2>
+                        <div id="settingsMenu" class="accordion-collapse collapse" data-bs-parent="#adminMenu">
+                            <div class="accordion-body p-0">
+                                <a href="<?= $base ?>/admin/setting/profile">👤 Profile</a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <a href="<?= $base ?>/admin/bookings/manage">📅 Bookings</a>
-                <a href="<?= $base ?>/admin/messages">💬 Messages</a>
-                <a href="<?= $base ?>/admin/users/manage">👥 Users</a>
+            <?php else: ?>
+                <a href="<?= $base ?>/user/dashboard">🏠 Dashboard</a>
+                <a href="<?= $base ?>/user/bookings/manage">📅 My Bookings</a>
+                <a href="<?= $base ?>/user/setting/profile">👤 Profile</a>
+            <?php endif; ?>
+        </div>
 
-                <div class="accordion-item bg-dark border-0">
-                    <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed bg-dark text-white" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#collapseTwo">
-                            ⚙️ Settings
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#menuAccordion">
-                        <div class="accordion-body bg-dark p-0">
-                            <a href="<?= $base ?>/admin/setting/profile" class="ps-4 d-block">Profile</a>
-                        </div>
-                    </div>
+        <!-- Main Content -->
+        <main class="main w-100">
+            <div class="topbar">
+                <button id="sidebarToggle" class="btn text-dark">&#9776;</button>
+                <div><strong><?= $pageTitle ?></strong></div>
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        👤 <?= $_SESSION['user']['name'] ?>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item"
+                                href="<?= $_SESSION['user']['role'] === 'admin' ? $base . '/admin/setting/profile' : $base . '/user/setting/profile' ?>">Settings</a>
+                        </li>
+                        <li><a class="dropdown-item" href="<?= $base ?>/logout">Logout</a></li>
+                    </ul>
                 </div>
             </div>
 
-        <?php else: ?>
-            <!-- User Sidebar -->
-            <a href="<?= $base ?>/user/dashboard">🏠 Dashboard</a>
-            <a href="<?= $base ?>/user/bookings/manage">📅 My Bookings</a>
-            <a href="<?= $base ?>/user/setting/profile">📅 Profile</a>
-        <?php endif; ?>
+            <div class="mt-4">
+                <?php
+                if (isset($_GET['status'])) {
+                    if ($_GET['status'] === 'added') {
+                        echo "<div class='alert alert-success'>Highlight added successfully!</div>";
+                    } elseif ($_GET['status'] === 'updated') {
+                        echo "<div class='alert alert-success'>Highlight updated successfully!</div>";
+                    } elseif ($_GET['status'] === 'deleted') {
+                        echo "<div class='alert alert-success'>Highlight deleted successfully!</div>";
+                    }
+                }
+
+                require_once $contentFile;
+                ?>
+            </div>
+        </main>
     </div>
 
-    <!-- Main Content -->
-    <main class="main">
-        <!-- Topbar -->
-        <div class="topbar">
-            <div><strong><?= $pageTitle ?></strong></div>
-            <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    👤 <?= $_SESSION['user']['name'] ?>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="<?= $_SESSION['user']['role'] === 'admin' ? $base . '/admin/setting/profile' : $base . '/user/setting/profile' ?>">Settings</a></li>
-                    <li><a class="dropdown-item" href="<?php echo $base; ?>/logout">Logout</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Page Content -->
-        <div class="mt-4">
-            <?php require_once $contentFile; ?>
-        </div>
-    </main>
+    <!-- Sidebar Toggle Script -->
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+    </script>
 
 </body>
 

@@ -55,3 +55,13 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS destination_highlights (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    destination_id INT NOT NULL,
+    video_title VARCHAR(255) NOT NULL,
+    video_description TEXT,
+    video_url VARCHAR(255) NOT NULL,
+    video_type ENUM('youtube', 'mp4') DEFAULT 'youtube',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (destination_id) REFERENCES destinations(id) ON DELETE CASCADE
+);
