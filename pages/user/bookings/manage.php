@@ -9,7 +9,11 @@ if ($userRole !== 'user') {
     die("Unauthorized access.");
 }
 
-$stmt = $conn->prepare("SELECT bookings.*, users.name AS user_name, destinations.title AS destination_title 
+// Fetch both regular and custom bookings
+$bookings = [];
+
+// Regular bookings
+$stmt = $conn->prepare("SELECT bookings.*, users.name AS user_name, destinations.title AS destination_title, NULL AS custom_destination 
                         FROM bookings 
                         JOIN users ON bookings.user_id = users.id 
                         JOIN destinations ON bookings.destination_slug = destinations.slug 
@@ -18,17 +22,32 @@ $stmt = $conn->prepare("SELECT bookings.*, users.name AS user_name, destinations
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $row['type'] = 'Regular';
+    $bookings[] = $row;
+}
+
+// Custom bookings
+$stmt2 = $conn->prepare("SELECT * FROM custom_bookings WHERE user_id = ? ORDER BY id DESC");
+$stmt2->bind_param("i", $userId);
+$stmt2->execute();
+$result2 = $stmt2->get_result();
+while ($row = $result2->fetch_assoc()) {
+    $row['type'] = 'Custom';
+    $bookings[] = $row;
+}
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>My Bookings</h2>
 </div>
 
-<?php if ($result->num_rows > 0): ?>
+<?php if (count($bookings) > 0): ?>
     <table class="table table-bordered table-hover bg-white shadow-sm">
         <thead class="table-light">
             <tr>
                 <th>ID</th>
+                <th>Type</th>
                 <th>Destination</th>
                 <th>Persons</th>
                 <th>Total Price</th>
@@ -38,16 +57,19 @@ $result = $stmt->get_result();
             </tr>
         </thead>
         <tbody>
-            <?php while ($row = $result->fetch_assoc()): ?>
+            <?php foreach ($bookings as $row): ?>
                 <tr>
                     <td><?= $row['id'] ?></td>
-                    <td><?= htmlspecialchars($row['destination_title']) ?></td>
-                    <td><?= $row['persons'] ?></td>
-                    <td>$<?= number_format($row['total_price'], 2) ?></td>
+                    <td><?= $row['type'] ?></td>
+                    <td><?= htmlspecialchars($row['type'] === 'Custom' ? $row['custom_destination'] : $row['destination_title']) ?></td>
+                    <td><?= $row['type'] === 'Custom' ? $row['people'] : $row['persons'] ?></td>
+                    <td>
+                        <?= isset($row['total_price']) ? '$' . number_format($row['total_price'], 2) : 'N/A' ?>
+                    </td>
                     <td><?= $row['travel_date'] ?></td>
                     <td>
                         <span class="badge bg-<?= $row['status'] === 'Confirmed' ? 'success' : ($row['status'] === 'Cancelled' ? 'danger' : 'warning') ?>">
-                            <?= $row['status'] ?>
+                            <?= $row['status'] ?? 'Pending' ?>
                         </span>
                     </td>
                     <td>
@@ -55,24 +77,24 @@ $result = $stmt->get_result();
                             data-bs-toggle="modal"
                             data-bs-target="#viewModal"
                             data-id="<?= $row['id'] ?>"
-                            data-destination="<?= htmlspecialchars($row['destination_title']) ?>"
-                            data-persons="<?= $row['persons'] ?>"
-                            data-price="<?= $row['total_price'] ?>"
+                            data-type="<?= $row['type'] ?>"
+                            data-destination="<?= htmlspecialchars($row['type'] === 'Custom' ? $row['custom_destination'] : $row['destination_title']) ?>"
+                            data-persons="<?= $row['type'] === 'Custom' ? $row['people'] : $row['persons'] ?>"
+                            data-price="<?= $row['total_price'] ?? '0' ?>"
                             data-date="<?= $row['travel_date'] ?>"
-                            data-status="<?= $row['status'] ?>"
-                            data-reason="<?= $row['reason'] ?>"
-                            data-message="<?= $row['message'] ?>">
+                            data-status="<?= $row['status'] ?? 'Pending' ?>"
+                            data-reason="<?= $row['reason'] ?? '' ?>"
+                            data-message="<?= $row['message'] ?? '' ?>">
                             View
                         </button>
                     </td>
                 </tr>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </tbody>
     </table>
 <?php else: ?>
     <div class="alert alert-info">No bookings found for your account.</div>
 <?php endif; ?>
-
 
 <!-- View Modal -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
@@ -83,6 +105,7 @@ $result = $stmt->get_result();
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <p><strong>Type:</strong> <span id="v-type"></span></p>
                 <p><strong>Destination:</strong> <span id="v-destination"></span></p>
                 <p><strong>Persons:</strong> <span id="v-persons"></span></p>
                 <p><strong>Total Price:</strong> $<span id="v-price"></span></p>
@@ -107,6 +130,7 @@ $result = $stmt->get_result();
     viewModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
 
+        document.getElementById('v-type').textContent = button.dataset.type;
         document.getElementById('v-destination').textContent = button.dataset.destination;
         document.getElementById('v-persons').textContent = button.dataset.persons;
         document.getElementById('v-price').textContent = parseFloat(button.dataset.price).toFixed(2);

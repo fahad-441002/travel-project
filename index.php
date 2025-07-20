@@ -1,6 +1,11 @@
 <?php
 require_once 'config/db.php';
 
+ini_set('display_errors', 0); // don't show errors to users
+ini_set('log_errors', 1);     // log all errors
+ini_set('error_log', __DIR__ . 'logs/error.log'); // log file path
+error_reporting(E_ALL);       // report all errors
+
 $request = strtok($_GET['page'] ?? 'home', '?');
 $path = "pages/$request.php";
 

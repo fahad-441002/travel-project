@@ -157,6 +157,7 @@ $pageTitle = $pageTitle ?? 'Dashboard';
                     </div>
 
                     <a href="<?= $base ?>/admin/bookings/manage">📅 Bookings</a>
+                    <a href="<?= $base ?>/admin/bookings/customs">📅 Custom Bookings</a>
                     <a href="<?= $base ?>/admin/messages">💬 Messages</a>
                     <a href="<?= $base ?>/admin/users/manage">👥 Users</a>
 

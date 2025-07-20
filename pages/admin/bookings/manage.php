@@ -1,10 +1,17 @@
 <?php
 require_once 'config/db.php';
 
-$result = $conn->query("SELECT bookings.*, users.name AS user_name, destinations.title AS destination_title 
+// Updated query to fetch user or guest name, email, and phone
+$result = $conn->query("SELECT bookings.*, 
+                               COALESCE(users.name, guest_users.name) AS user_name,
+                               COALESCE(users.email, guest_users.email) AS user_email,
+                               COALESCE(guest_users.phone, '') AS user_phone,
+                               bookings.destination_title,
+                               destinations.title AS real_destination_title 
                         FROM bookings 
-                        JOIN users ON bookings.user_id = users.id 
-                        JOIN destinations ON bookings.destination_slug = destinations.slug 
+                        LEFT JOIN users ON bookings.user_id = users.id 
+                        LEFT JOIN guest_users ON bookings.guest_id = guest_users.id
+                        LEFT JOIN destinations ON bookings.destination_slug = destinations.slug 
                         ORDER BY bookings.id DESC");
 
 // Fetch all destinations
@@ -22,7 +29,6 @@ while ($d = $allDestinations->fetch_assoc()) {
     <div class="alert alert-success">Booking updated successfully!</div>
 <?php endif; ?>
 
-
 <table class="table table-bordered table-hover bg-white shadow-sm">
     <thead class="table-light">
         <tr>
@@ -33,6 +39,8 @@ while ($d = $allDestinations->fetch_assoc()) {
             <th>Total Price</th>
             <th>Travel Date</th>
             <th>Status</th>
+            <th>Source</th>
+            <th>Channel</th>
             <th width="160">Actions</th>
         </tr>
     </thead>
@@ -41,7 +49,7 @@ while ($d = $allDestinations->fetch_assoc()) {
             <tr>
                 <td><?= $row['id'] ?></td>
                 <td><?= htmlspecialchars($row['user_name']) ?></td>
-                <td><?= htmlspecialchars($row['destination_title']) ?></td>
+                <td><?= htmlspecialchars($row['destination_title'] ?: $row['real_destination_title']) ?></td>
                 <td><?= $row['persons'] ?></td>
                 <td>$<?= number_format($row['total_price'], 2) ?></td>
                 <td><?= $row['travel_date'] ?></td>
@@ -50,22 +58,25 @@ while ($d = $allDestinations->fetch_assoc()) {
                         <?= $row['status'] ?>
                     </span>
                 </td>
+                <td><?= htmlspecialchars($row['source']) ?></td>
+                <td><?= htmlspecialchars($row['channel']) ?></td>
                 <td>
                     <button class="btn btn-sm btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#viewModal"
                         data-id="<?= $row['id'] ?>"
                         data-user="<?= htmlspecialchars($row['user_name']) ?>"
-                        data-destination="<?= htmlspecialchars($row['destination_title']) ?>"
+                        data-email="<?= htmlspecialchars($row['user_email']) ?>"
+                        data-phone="<?= htmlspecialchars($row['user_phone']) ?>"
+                        data-destination="<?= htmlspecialchars($row['destination_title'] ?: $row['real_destination_title']) ?>"
                         data-persons="<?= $row['persons'] ?>"
                         data-price="<?= $row['total_price'] ?>"
                         data-date="<?= $row['travel_date'] ?>"
                         data-status="<?= $row['status'] ?>"
-                        data-message="<?= htmlspecialchars($row['message']) ?>"
-                        data-reason="<?= $row['reason'] ?>">
+                        data-message="<?= htmlspecialchars($row['agent_message']) ?>"
+                        data-reason="<?= htmlspecialchars($row['reason']) ?>">
                         View/Edit
                     </button>
-
                 </td>
             </tr>
         <?php endwhile; ?>
@@ -84,6 +95,8 @@ while ($d = $allDestinations->fetch_assoc()) {
                 </div>
                 <div class="modal-body">
                     <p><strong>User:</strong> <span id="booking-user"></span></p>
+                    <p><strong>Email:</strong> <span id="booking-email"></span></p>
+                    <p><strong>Phone:</strong> <span id="booking-phone"></span></p>
 
                     <div class="mb-2">
                         <label>Destination</label>
@@ -118,7 +131,6 @@ while ($d = $allDestinations->fetch_assoc()) {
                         <label>Cancellation Reason</label>
                         <textarea name="reason" id="booking-reason" class="form-control" rows="2" placeholder="Enter cancellation reason"></textarea>
                     </div>
-
 
                     <div>
                         <strong>Total Price:</strong> $<span id="booking-price">0.00</span>
@@ -156,7 +168,7 @@ while ($d = $allDestinations->fetch_assoc()) {
             reasonContainer.style.display = 'block';
         } else {
             reasonContainer.style.display = 'none';
-            reasonInput.value = ''; // clear if switching back
+            reasonInput.value = '';
         }
     }
 
@@ -166,13 +178,12 @@ while ($d = $allDestinations->fetch_assoc()) {
             destinationsData[key].title === button.dataset.destination);
 
         const status = button.dataset.status;
-
-        // Read-only logic (only if Cancelled)
         const isReadOnly = (status === 'Cancelled');
 
-        // Fill modal values
         document.getElementById('booking-id').value = button.dataset.id;
         document.getElementById('booking-user').textContent = button.dataset.user;
+        document.getElementById('booking-email').textContent = button.dataset.email || 'N/A';
+        document.getElementById('booking-phone').textContent = button.dataset.phone || 'N/A';
         document.getElementById('booking-message').textContent = button.dataset.message;
         document.getElementById('booking-date').value = button.dataset.date;
         document.getElementById('booking-persons').value = button.dataset.persons;
@@ -180,41 +191,30 @@ while ($d = $allDestinations->fetch_assoc()) {
         destSelect.value = slug;
         updateTotal();
 
-        // Update status options
-        statusSelect.innerHTML = ''; // Clear existing options
-
-        // Only allow "Confirmed" or "Cancelled" if status was already Confirmed
+        statusSelect.innerHTML = '';
         if (status === 'Confirmed') {
             statusSelect.innerHTML += '<option selected>Confirmed</option>';
             statusSelect.innerHTML += '<option>Cancelled</option>';
-        }
-        // Allow all options if current is Pending
-        else if (status === 'Pending') {
+        } else if (status === 'Pending') {
             statusSelect.innerHTML += '<option>Pending</option>';
             statusSelect.innerHTML += '<option>Confirmed</option>';
             statusSelect.innerHTML += '<option>Cancelled</option>';
             statusSelect.value = 'Pending';
-        }
-        // If Cancelled, show only Cancelled
-        else if (status === 'Cancelled') {
+        } else if (status === 'Cancelled') {
             statusSelect.innerHTML += '<option selected>Cancelled</option>';
         }
 
-        // Show/hide cancel reason
         reasonContainer.style.display = (status === 'Cancelled') ? 'block' : 'none';
 
-        // Enable/disable fields
         destSelect.disabled = isReadOnly;
         document.getElementById('booking-date').readOnly = isReadOnly;
         personsInput.readOnly = isReadOnly;
         statusSelect.disabled = isReadOnly;
         reasonInput.readOnly = isReadOnly;
 
-        // Submit button visibility
         const submitBtn = viewModal.querySelector('button[type="submit"]');
         submitBtn.style.display = isReadOnly ? 'none' : 'inline-block';
     });
-
 
     statusSelect.addEventListener('change', toggleReasonBox);
     destSelect.addEventListener('change', updateTotal);

@@ -274,16 +274,54 @@ function initChatbot(destinations) {
   };
 
   function showConfirmation() {
-    addMessage(`
-    ✅ Booking Confirmed!<br>
-    <strong>Name:</strong> ${userData.name}<br>
-    ${userData.email ? `<strong>Email:</strong> ${userData.email}<br>` : ''}
-    ${userData.phone ? `<strong>Phone:</strong> ${userData.phone}<br>` : ''}
-    <strong>Destination:</strong> ${userData.manual ? userData.customDestination : destinations[userData.destination].name}<br>
-    <strong>Travel Date:</strong> ${userData.date}<br>
-    <strong>Total Price:</strong> $${(destinations[userData.destination]?.price * userData.people || 0).toLocaleString()}
-  `);
-    addMessage("📧 You'll receive a confirmation shortly. Thank you for booking with us!");
+    const destinationName = userData.manual
+      ? userData.customDestination
+      : destinations[userData.destination].name;
+    const price = userData.manual
+      ? 0
+      : destinations[userData.destination].price || 0;
+
+    const bookingPayload = {
+      name: userData.name,
+      email: userData.email || '',
+      phone: userData.phone,
+      destination: userData.destination,
+      customDestination: userData.customDestination || '',
+      date: userData.date,
+      people: userData.people,
+      price: price,
+      manual: userData.manual,
+      contactMethod: userData.contactMethod
+    };
+
+    console.log(bookingPayload);
+
+
+    fetch("/hassan/api/chatbot-booking.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bookingPayload)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          addMessage(`✅ Booking Confirmed!<br>
+        <strong>Name:</strong> ${userData.name}<br>
+        ${userData.email ? `<strong>Email:</strong> ${userData.email}<br>` : ''}
+        ${userData.phone ? `<strong>Phone:</strong> ${userData.phone}<br>` : ''}
+        <strong>Destination:</strong> ${destinationName}<br>
+        <strong>Travel Date:</strong> ${userData.date}<br>
+        <strong>Total Price:</strong> $${(price * userData.people).toLocaleString()}
+      `);
+          addMessage("📧 You'll receive a confirmation shortly. Thank you for booking with us!");
+        } else {
+          addMessage(`❌ Booking failed: ${data.error || "Server error"}`);
+        }
+      })
+      .catch(err => {
+        console.error("Booking error:", err);
+        addMessage("❌ Failed to complete booking. Please try again later.");
+      });
   }
 
   const handleAgentContact = () => {
@@ -293,16 +331,48 @@ function initChatbot(destinations) {
       userData.name = name;
 
       showInput("number", "Enter your phone number", (method) => {
+        userData.phone = method;
         userData.contactMethod = method;
 
         showInput("text", "Add any notes or questions", (message) => {
           userData.agentMessage = message;
 
-          addMessage(`
-          💬 Thank you, ${userData.name}.<br>
-          A travel agent will contact you via <strong>${userData.contactMethod}</strong> soon.<br>
-          <strong>Your Message:</strong> ${userData.agentMessage}
-        `);
+          const agentPayload = {
+            name: userData.name,
+            email: '', // optional
+            phone: userData.phone,
+            destination: '',
+            customDestination: '',
+            date: '',
+            people: '',
+            price: 0,
+            manual: false,
+            contactMethod: userData.contactMethod,
+            agentMessage: userData.agentMessage,
+            channel: 'talk_to_agent'
+          };
+
+          fetch("/hassan/api/chatbot-booking.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(agentPayload)
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                addMessage(`
+              💬 Thank you, ${userData.name}.<br>
+              A travel agent will contact you via <strong>${userData.contactMethod}</strong> soon.<br>
+              <strong>Your Message:</strong> ${userData.agentMessage}
+            `);
+              } else {
+                addMessage(`❌ Failed to send request: ${data.error}`);
+              }
+            })
+            .catch(err => {
+              console.error("Agent contact error:", err);
+              addMessage("❌ Could not submit your request. Please try again later.");
+            });
         });
       });
     });
@@ -321,26 +391,60 @@ function initChatbot(destinations) {
           userData.name = name;
 
           showInput("number", "Enter your phone number", (method) => {
-            userData.contactMethod = method;
+            userData.phone = method;
+            userData.contactMethod = 'phone';
 
             showInput("text", "Any message or special request?", (msg) => {
               userData.agentMessage = msg;
 
-              addMessage(`
-              💬 Thank you, ${userData.name}.<br>
-              Our travel agent will contact you via <strong>${userData.contactMethod}</strong> soon.<br>
-              <strong>Destination:</strong> ${userData.customDestination}<br>
-              <strong>Date:</strong> ${userData.date}<br>
-              <strong>Travelers:</strong> ${userData.people}<br>
-              <strong>Message:</strong> ${userData.agentMessage}
-            `);
+              const agentCustomPayload = {
+                name: userData.name,
+                email: '',
+                phone: userData.phone,
+                destination: '',
+                customDestination: userData.customDestination,
+                date: userData.date,
+                people: userData.people,
+                price: 0,
+                manual: true,
+                contactMethod: userData.contactMethod,
+                agentMessage: userData.agentMessage,
+                channel: 'talk_to_agent'
+              };
+
+              console.log("Agent Custom Payload:", agentCustomPayload);
+
+
+              fetch("/hassan/api/chatbot-booking.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(agentCustomPayload)
+              })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.success) {
+                    addMessage(`
+                  💬 Thank you, ${userData.name}.<br>
+                  Our travel agent will contact you via <strong>${userData.contactMethod}</strong> soon.<br>
+                  <strong>Destination:</strong> ${userData.customDestination}<br>
+                  <strong>Date:</strong> ${userData.date}<br>
+                  <strong>Travelers:</strong> ${userData.people}<br>
+                  <strong>Message:</strong> ${userData.agentMessage}
+                `);
+                  } else {
+                    addMessage(`❌ Request failed: ${data.error}`);
+                  }
+                })
+                .catch(err => {
+                  console.error("Agent custom error:", err);
+                  addMessage("❌ Could not send request. Please try again later.");
+                });
             });
           });
         });
       });
     });
   };
-
 
   // Icon click
   chatbotIcon.addEventListener("click", () => {

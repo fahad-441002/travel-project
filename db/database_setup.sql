@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS destinations (
 
 CREATE TABLE IF NOT EXISTS bookings (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    user_id INT DEFAULT NULL,
     destination_slug VARCHAR(255) DEFAULT NULL,
     destination_title VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
@@ -65,3 +65,36 @@ CREATE TABLE IF NOT EXISTS destination_highlights (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (destination_id) REFERENCES destinations(id) ON DELETE CASCADE
 );
+
+
+CREATE TABLE IF NOT EXISTS guest_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(150),
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS custom_bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT DEFAULT NULL,
+    guest_id INT DEFAULT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    custom_destination VARCHAR(255) NOT NULL,
+    travel_date DATE,
+    people INT,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (guest_id) REFERENCES guest_users(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+ALTER TABLE bookings 
+  ADD COLUMN guest_id INT DEFAULT NULL,
+  ADD COLUMN agent_message TEXT DEFAULT NULL,
+  ADD COLUMN source ENUM('site', 'chatbot', 'agent') DEFAULT 'site',
+  ADD COLUMN channel ENUM('book_now', 'talk_to_agent') DEFAULT 'book_now',
+  ADD CONSTRAINT fk_guest FOREIGN KEY (guest_id) REFERENCES guest_users(id) ON DELETE SET NULL;
