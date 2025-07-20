@@ -140,7 +140,7 @@ try {
     <p>Check the admin panel to view full details.</p>
 </div>';
 
-        sendMail('mfd84739@gmail.com', "📝 New Custom Booking - $name", $adminBody);
+        sendMail('hassanaltaf468348@gmail.com', "📝 New Custom Booking - $name", $adminBody);
 
         echo json_encode(['success' => true, 'message' => 'Custom booking saved successfully']);
         exit;
@@ -243,7 +243,7 @@ try {
     <p>Check the dashboard for full details.</p>
 </div>';
 
-    sendMail('mfd84739@gmail.com', "🧾 New Booking - $name", $adminBody);
+    sendMail('hassanaltaf468348@gmail.com', "🧾 New Booking - $name", $adminBody);
 
     echo json_encode(['success' => true, 'message' => 'Booking saved successfully']);
 } catch (Exception $e) {

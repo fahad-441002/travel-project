@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
     </div>
 ';
 
-            sendMail('mfd84739@gmail.com', "🧾 New Booking from {$userName}", $adminBody);
+            sendMail('hassanaltaf468348@gmail.com', "🧾 New Booking from {$userName}", $adminBody);
         } else {
             echo "<p style='color:red'>Error saving booking: {$insert->error}</p>";
         }

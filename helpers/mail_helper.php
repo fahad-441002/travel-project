@@ -16,13 +16,13 @@ function sendMail($to, $subject, $bodyHtml, $bodyText = '', $toName = '')
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';  // Replace with your SMTP host
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'mfd84739@gmail.com';    // SMTP username
-        $mail->Password   = 'sadrlfuxmoitgruk';      // SMTP password
+        $mail->Username   = 'hassanaltaf468348@gmail.com';    // SMTP username
+        $mail->Password   = 'mqxdqdswzaixfprq';      // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
         // Sender
-        $mail->setFrom('mfd84739@gmail.com', 'ExploreWorld');
+        $mail->setFrom('hassanaltaf468348@gmail.com', 'ExploreWorld');
 
         // Recipient
         $mail->addAddress($to, $toName ?: $to);
