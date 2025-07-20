@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jul 20, 2025 at 12:31 PM
+-- Generation Time: Jul 20, 2025 at 03:50 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.2.26
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   KEY `user_id` (`user_id`),
   KEY `destination_slug` (`destination_slug`),
   KEY `fk_guest` (`guest_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `bookings`
@@ -66,15 +66,7 @@ INSERT INTO `bookings` (`id`, `user_id`, `destination_slug`, `destination_title`
 (7, 1, 'discover-italy', 'Discover Italy', '03117912563', '2025-07-09', 1, 1499.00, 1499.00, '12313', 'Pending', NULL, '2025-07-09 21:54:31', NULL, NULL, 'site', 'book_now'),
 (8, 1, 'explore-new-york-city', 'Explore New York City', '03117912563', '2025-07-09', 1, 1099.00, 1099.00, 'asds', 'Cancelled', 'asda', '2025-07-09 21:56:51', NULL, NULL, 'site', 'book_now'),
 (9, 3, 'autralia', 'Autralia', '03247684739', '2025-07-10', 5, 2000.00, 10000.00, 'asdasd', 'Pending', NULL, '2025-07-10 15:30:53', NULL, NULL, 'site', 'book_now'),
-(10, 4, 'discover-italy', 'Discover Italy', '03247684739', '2025-07-10', 10, 1499.00, 14990.00, '', 'Confirmed', NULL, '2025-07-10 15:34:36', NULL, NULL, 'site', 'book_now'),
-(11, NULL, NULL, 'Actual Custom Destination', '', '2023-12-31', 3, 150.00, 450.00, NULL, 'Pending', NULL, '2025-07-20 11:21:59', 2, NULL, 'chatbot', 'book_now'),
-(12, NULL, 'explore-paris', '', '', '2025-12-12', 5, 1499.00, 7495.00, NULL, 'Pending', NULL, '2025-07-20 11:23:44', 3, NULL, 'chatbot', 'book_now'),
-(13, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:19:33', 9, NULL, 'chatbot', 'book_now'),
-(14, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:20:27', 10, NULL, 'chatbot', 'book_now'),
-(15, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:20:50', 11, NULL, 'chatbot', 'book_now'),
-(16, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:22:44', 12, NULL, 'chatbot', 'book_now'),
-(17, NULL, 'experience-tokyo', '', '', '2025-12-12', 5, 1299.00, 6495.00, NULL, 'Pending', NULL, '2025-07-20 12:23:54', 13, NULL, 'chatbot', 'book_now'),
-(18, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:26:34', 14, NULL, 'chatbot', 'book_now');
+(29, 5, 'explore-paris', 'Explore Paris', '03247684739', '2025-07-20', 1, 1499.00, 1499.00, 'Test', 'Pending', NULL, '2025-07-20 15:48:48', NULL, NULL, 'site', 'book_now');
 
 -- --------------------------------------------------------
 
@@ -123,13 +115,6 @@ CREATE TABLE IF NOT EXISTS `custom_bookings` (
   KEY `guest_id` (`guest_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `custom_bookings`
---
-
-INSERT INTO `custom_bookings` (`id`, `user_id`, `guest_id`, `name`, `email`, `phone`, `custom_destination`, `travel_date`, `people`, `message`, `created_at`) VALUES
-(1, NULL, 5, 'Fahad', '', '03247684739', 'full', '2025-12-22', 5, 'Ys new', '2025-07-20 11:46:28');
 
 -- --------------------------------------------------------
 
@@ -219,26 +204,7 @@ CREATE TABLE IF NOT EXISTS `guest_users` (
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `guest_users`
---
-
-INSERT INTO `guest_users` (`id`, `name`, `email`, `phone`, `created_at`) VALUES
-(2, 'Actual Name', 'actual.email@example.com', '', '2025-07-20 11:21:59'),
-(3, 'Fahad', 'mfd84739@gmail.com', '', '2025-07-20 11:23:44'),
-(4, 'Fahd', NULL, '03247684739', '2025-07-20 11:37:00'),
-(5, 'Fahad', '', '03247684739', '2025-07-20 11:46:28'),
-(6, 'Fhad', 'fahadshd11@gmail.com', NULL, '2025-07-20 12:17:36'),
-(7, 'Fahad', 'fahadshd11@gmail.com', NULL, '2025-07-20 12:17:41'),
-(8, 'Fahad', 'mfd84739@gmail.com', NULL, '2025-07-20 12:18:10'),
-(9, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:19:33'),
-(10, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:20:27'),
-(11, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:20:50'),
-(12, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:22:44'),
-(13, 'fahad', 'mfd84739@gmail.com', '', '2025-07-20 12:23:54'),
-(14, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:26:34');
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -257,7 +223,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `status` enum('active','suspended') COLLATE utf8mb4_unicode_ci DEFAULT 'active',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
@@ -267,7 +233,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `s
 (1, 'Admin', 'admin@gmail.com', '$2y$10$JtiEVVDwNZyzVvrZFTxuY.3CiaUMlbt3UDqwEb4IdOnSYajAifjIC', 'admin', '2025-07-06 10:02:12', 'active'),
 (2, 'New User', 'fahaduser@gmail.com', '$2y$10$XGD.hrKO7H24ACaSYEERTer/UE1Bptihq2h.aQ713EkhSwf7oJLiW', 'user', '2025-07-09 21:24:17', 'active'),
 (3, 'New User', 'newfahad@gmail.com', '$2y$10$xiETEJOKsidMd/djIXR2zeNXxKvUFCTXT6DbMJjl89ZbhqYxrTquO', 'user', '2025-07-10 15:24:30', 'active'),
-(4, 'Hassan', 'hassanaltaf468348@gmail.com', '$2y$10$KusarT.UEmqxBqhSyqIfOOotLofjbW0lKyuICIDJU.2H0W671HPmu', 'user', '2025-07-10 15:33:55', 'active');
+(4, 'Hassan', 'hassanaltaf468348@gmail.com', '$2y$10$KusarT.UEmqxBqhSyqIfOOotLofjbW0lKyuICIDJU.2H0W671HPmu', 'user', '2025-07-10 15:33:55', 'active'),
+(5, 'Muhammad Fahad', 'mfd84739@gmail.com', '$2y$10$ohCXq9GMUnWcXznq08/hIuDN3VmFzM./SoE5tK.3Ef0BBBLmn6IHK', 'user', '2025-07-20 14:51:59', 'active');
 
 --
 -- Constraints for dumped tables
