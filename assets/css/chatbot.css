@@ -157,6 +157,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -284,11 +285,13 @@
 }
 
 @keyframes typingAnimation {
+
   0%,
   60%,
   100% {
     transform: translateY(0);
   }
+
   30% {
     transform: translateY(-5px);
   }
@@ -371,4 +374,10 @@
     width: 24px;
     height: 24px;
   }
+}
+
+
+.message.loading {
+  font-style: italic;
+  opacity: 0.7;
 }

@@ -294,8 +294,12 @@ function initChatbot(destinations) {
       contactMethod: userData.contactMethod
     };
 
-    console.log(bookingPayload);
-
+    // Add loading message
+    const loadingMessage = document.createElement("div");
+    loadingMessage.className = "message bot loading";
+    loadingMessage.innerHTML = "🕐 Please wait, we are creating your booking...";
+    chatMessages.appendChild(loadingMessage);
+    scrollToBottom();
 
     fetch("/hassan/api/chatbot-booking.php", {
       method: "POST",
@@ -304,6 +308,8 @@ function initChatbot(destinations) {
     })
       .then(res => res.json())
       .then(data => {
+        loadingMessage.remove();
+
         if (data.success) {
           addMessage(`✅ Booking Confirmed!<br>
         <strong>Name:</strong> ${userData.name}<br>
@@ -320,6 +326,7 @@ function initChatbot(destinations) {
       })
       .catch(err => {
         console.error("Booking error:", err);
+        loadingMessage.remove();
         addMessage("❌ Failed to complete booking. Please try again later.");
       });
   }
@@ -351,6 +358,12 @@ function initChatbot(destinations) {
             agentMessage: userData.agentMessage,
             channel: 'talk_to_agent'
           };
+          // Add loading message
+          const loadingMessage = document.createElement("div");
+          loadingMessage.className = "message bot loading";
+          loadingMessage.innerHTML = "🕐 Please wait, we are creating your booking...";
+          chatMessages.appendChild(loadingMessage);
+          scrollToBottom();
 
           fetch("/hassan/api/chatbot-booking.php", {
             method: "POST",
@@ -359,6 +372,8 @@ function initChatbot(destinations) {
           })
             .then(res => res.json())
             .then(data => {
+              loadingMessage.remove();
+
               if (data.success) {
                 addMessage(`
               💬 Thank you, ${userData.name}.<br>
@@ -371,6 +386,7 @@ function initChatbot(destinations) {
             })
             .catch(err => {
               console.error("Agent contact error:", err);
+              loadingMessage.remove();
               addMessage("❌ Could not submit your request. Please try again later.");
             });
         });
@@ -414,6 +430,12 @@ function initChatbot(destinations) {
 
               console.log("Agent Custom Payload:", agentCustomPayload);
 
+              // Add loading message
+              const loadingMessage = document.createElement("div");
+              loadingMessage.className = "message bot loading";
+              loadingMessage.innerHTML = "🕐 Please wait, we are creating your booking...";
+              chatMessages.appendChild(loadingMessage);
+              scrollToBottom();
 
               fetch("/hassan/api/chatbot-booking.php", {
                 method: "POST",
@@ -422,6 +444,7 @@ function initChatbot(destinations) {
               })
                 .then(res => res.json())
                 .then(data => {
+                  loadingMessage.remove();
                   if (data.success) {
                     addMessage(`
                   💬 Thank you, ${userData.name}.<br>
@@ -437,6 +460,7 @@ function initChatbot(destinations) {
                 })
                 .catch(err => {
                   console.error("Agent custom error:", err);
+                  loadingMessage.remove();
                   addMessage("❌ Could not send request. Please try again later.");
                 });
             });

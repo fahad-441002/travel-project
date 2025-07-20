@@ -14,7 +14,7 @@ function sendMail($to, $subject, $bodyHtml, $bodyText = '', $toName = '')
     try {
         // Server settings
         $mail->isSMTP();
-        $mail->Host       = 'smtp.example.com';  // Replace with your SMTP host
+        $mail->Host       = 'smtp.gmail.com';  // Replace with your SMTP host
         $mail->SMTPAuth   = true;
         $mail->Username   = 'mfd84739@gmail.com';    // SMTP username
         $mail->Password   = 'sadrlfuxmoitgruk';      // SMTP password
@@ -22,7 +22,7 @@ function sendMail($to, $subject, $bodyHtml, $bodyText = '', $toName = '')
         $mail->Port       = 587;
 
         // Sender
-        $mail->setFrom('mfd84739@gmail.com', 'Travel & Tour');
+        $mail->setFrom('mfd84739@gmail.com', 'ExploreWorld');
 
         // Recipient
         $mail->addAddress($to, $toName ?: $to);
@@ -34,9 +34,9 @@ function sendMail($to, $subject, $bodyHtml, $bodyText = '', $toName = '')
         $mail->AltBody = $bodyText ?: strip_tags($bodyHtml);
 
         $mail->send();
-        return true;
+        // return true;
     } catch (Exception $e) {
         error_log("Email could not be sent. Mailer Error: {$mail->ErrorInfo}");
-        return false;
+        // return false;
     }
 }

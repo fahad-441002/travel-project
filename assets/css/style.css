@@ -883,3 +883,16 @@ button.loading {
     padding: 6px;
   }
 }
+
+@media (max-width: 768px) {
+  .mission-vision {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* About us */
+  .team-members {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

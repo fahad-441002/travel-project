@@ -1,6 +1,7 @@
 <?php
 require_once 'config/db.php';
 require_once 'includes/functions.php';
+require_once 'helpers/mail_helper.php';
 
 
 $pageTitle = "Welcome to Travel & Tour";
@@ -65,8 +66,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
                 'total_price' => $total,
                 'message' => $message
             ];
+            $userEmail = $user['email'];
+            $userName = $user['name'];
+            $status = 'Pending';
 
-            sendBookingEmails($user, $dest, $bookingData);
+            // User email template
+            $userBody = '
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #f1c40f;">Booking Pending</h2>
+        <p>Dear ' . htmlspecialchars($userName) . ',</p>
+        <p>Your booking has been <strong>' . $status . '</strong> for the following destination:</p>
+        <table cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td><strong>Destination:</strong></td>
+                <td>' . htmlspecialchars($dest['title']) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Travel Date:</strong></td>
+                <td>' . htmlspecialchars($bookingData['travel_date']) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Persons:</strong></td>
+                <td>' . $bookingData['persons'] . '</td>
+            </tr>
+            <tr>
+                <td><strong>Total Price:</strong></td>
+                <td>$' . number_format($bookingData['total_price'], 2) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Status:</strong></td>
+                <td>' . $status . '</td>
+            </tr>
+        </table>
+        <p style="margin-top: 20px;">We will contact you soon to confirm your booking.</p>
+        <p>Thank you,<br><strong>Travel Team</strong></p>
+    </div>
+';
+
+            sendMail($user['email'], "Booking Confirmation - {$dest['title']}", $userBody);
+
+            // Admin email template
+            $adminBody = '
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #3498db;">New Booking Received</h2>
+        <p><strong>User:</strong> ' . htmlspecialchars($userName) . '</p>
+        <table cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td><strong>Email:</strong></td>
+                <td>' . htmlspecialchars($userEmail) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Phone:</strong></td>
+                <td>' . htmlspecialchars($bookingData['phone']) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Destination:</strong></td>
+                <td>' . htmlspecialchars($dest['title']) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Date:</strong></td>
+                <td>' . htmlspecialchars($bookingData['travel_date']) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Persons:</strong></td>
+                <td>' . $bookingData['persons'] . '</td>
+            </tr>
+            <tr>
+                <td><strong>Total:</strong></td>
+                <td>$' . number_format($bookingData['total_price'], 2) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Message:</strong></td>
+                <td>' . nl2br(htmlspecialchars($bookingData['message'])) . '</td>
+            </tr>
+        </table>
+        <p>Login to your dashboard to review and take action.</p>
+    </div>
+';
+
+            sendMail('mfd84739@gmail.com', "🧾 New Booking from {$userName}", $adminBody);
         } else {
             echo "<p style='color:red'>Error saving booking: {$insert->error}</p>";
         }

@@ -216,6 +216,13 @@ while ($d = $allDestinations->fetch_assoc()) {
         submitBtn.style.display = isReadOnly ? 'none' : 'inline-block';
     });
 
+    // Disable submit button and show "Saving..." on form submit
+    viewModal.querySelector('form').addEventListener('submit', function(e) {
+        const submitBtn = viewModal.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Saving...';
+    });
+
     statusSelect.addEventListener('change', toggleReasonBox);
     destSelect.addEventListener('change', updateTotal);
     personsInput.addEventListener('input', updateTotal);

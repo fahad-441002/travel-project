@@ -80,30 +80,86 @@ try {
 
         // Email to user
         if (!empty($email)) {
-            $body = "<h2>Thank you, $name!</h2>
-                     <p>Your custom booking request for <strong>$custom_destination</strong> has been received.</p>
-                     <p>We’ll get back to you shortly.</p>";
+            $body = '
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #f1c40f;">Custom Booking Received</h2>
+        <p>Dear ' . htmlspecialchars($name) . ',</p>
+        <p>Your custom booking request has been received for:</p>
+        <table cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td><strong>Custom Destination:</strong></td>
+                <td>' . htmlspecialchars($custom_destination) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Travel Date:</strong></td>
+                <td>' . htmlspecialchars($date) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Persons:</strong></td>
+                <td>' . (int)$people . '</td>
+            </tr>
+        </table>
+        <p style="margin-top: 20px;">We’ll get back to you shortly regarding your request.</p>
+        <p>Thank you,<br><strong>Travel Team</strong></p>
+    </div>';
+
             sendMail($email, "Custom Booking Request Received", $body, '', $name);
         }
 
         // Email to admin
-        $adminBody = "<h3>New Custom Booking</h3>
-                      <p><strong>Name:</strong> $name<br>
-                         <strong>Email:</strong> $email<br>
-                         <strong>Phone:</strong> $phone<br>
-                         <strong>Custom Destination:</strong> $custom_destination<br>
-                         <strong>Date:</strong> $date<br>
-                         <strong>People:</strong> $people<br>
-                         <strong>Message:</strong> $agentMsg</p>";
-        sendMail('admin@yourdomain.com', "New Custom Booking", $adminBody);
+        $adminBody = '
+<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px;">
+    <h2 style="color: #3498db;">New Custom Booking Received</h2>
+    <p><strong>Name:</strong> ' . htmlspecialchars($name) . '</p>
+    <table cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td><strong>Email:</strong></td>
+            <td>' . htmlspecialchars($email) . '</td>
+        </tr>
+        <tr>
+            <td><strong>Phone:</strong></td>
+            <td>' . htmlspecialchars($phone) . '</td>
+        </tr>
+        <tr>
+            <td><strong>Custom Destination:</strong></td>
+            <td>' . htmlspecialchars($custom_destination) . '</td>
+        </tr>
+        <tr>
+            <td><strong>Date:</strong></td>
+            <td>' . htmlspecialchars($date) . '</td>
+        </tr>
+        <tr>
+            <td><strong>People:</strong></td>
+            <td>' . (int)$people . '</td>
+        </tr>
+        <tr>
+            <td><strong>Message:</strong></td>
+            <td>' . nl2br(htmlspecialchars($agentMsg)) . '</td>
+        </tr>
+    </table>
+    <p>Check the admin panel to view full details.</p>
+</div>';
+
+        sendMail('mfd84739@gmail.com', "📝 New Custom Booking - $name", $adminBody);
 
         echo json_encode(['success' => true, 'message' => 'Custom booking saved successfully']);
         exit;
     }
 
-    // === Normal destination booking ===
+    // === destination booking ===
     $slug  = $conn->real_escape_string($data['destination'] ?? '');
-    $title = $conn->real_escape_string($data['title'] ?? '');
+
+    // Look up the destination by slug
+    $stmt = $conn->prepare("SELECT title FROM destinations WHERE slug = ?");
+    $stmt->bind_param("s", $slug);
+    $stmt->execute();
+    $stmt->bind_result($real_title);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Fallback title if not found
+    $title = $real_title ?: 'Unknown Destination';
+
 
     $stmt = $conn->prepare("INSERT INTO bookings 
         (user_id, guest_id, destination_slug, destination_title, phone, travel_date, persons, amount, total_price, status, source, agent_message, channel) 
@@ -115,25 +171,79 @@ try {
 
     // Email to user
     if (!empty($email)) {
-        $body = "<h2>Thank you, $name!</h2>
-                 <p>Your booking for <strong>$title</strong> on <strong>$date</strong> has been received.</p>
-                 <p><strong>Persons:</strong> $people<br>
-                    <strong>Total Price:</strong> $$total<br>
-                    <strong>Status:</strong> Pending</p>
-                 <p>We will contact you soon.</p>";
+        $body = '
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #f1c40f;">Booking Pending</h2>
+        <p>Dear ' . htmlspecialchars($name) . ',</p>
+        <p>Your booking has been <strong>Pending</strong> for the following destination:</p>
+        <table cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td><strong>Destination:</strong></td>
+                <td>' . htmlspecialchars($title) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Travel Date:</strong></td>
+                <td>' . htmlspecialchars($date) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Persons:</strong></td>
+                <td>' . (int)$people . '</td>
+            </tr>
+            <tr>
+                <td><strong>Total Price:</strong></td>
+                <td>$' . number_format($total, 2) . '</td>
+            </tr>
+            <tr>
+                <td><strong>Status:</strong></td>
+                <td>Pending</td>
+            </tr>
+        </table>
+        <p style="margin-top: 20px;">We will contact you soon to confirm your booking.</p>
+        <p>Thank you,<br><strong>Travel Team</strong></p>
+    </div>';
+
         sendMail($email, "Booking Confirmation - $title", $body, '', $name);
     }
 
     // Email to admin
-    $adminBody = "<h3>New Booking</h3>
-                  <p><strong>Name:</strong> $name<br>
-                     <strong>Email:</strong> $email<br>
-                     <strong>Phone:</strong> $phone<br>
-                     <strong>Destination:</strong> $title<br>
-                     <strong>Date:</strong> $date<br>
-                     <strong>People:</strong> $people<br>
-                     <strong>Channel:</strong> $channel</p>";
-    sendMail('admin@yourdomain.com', "New Booking", $adminBody);
+    $adminBody = '
+<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px;">
+    <h2 style="color: #3498db;">New Booking Received</h2>
+    <p><strong>Name:</strong> ' . htmlspecialchars($name) . '</p>
+    <table cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td><strong>Email:</strong></td>
+            <td>' . htmlspecialchars($email) . '</td>
+        </tr>
+        <tr>
+            <td><strong>Phone:</strong></td>
+            <td>' . htmlspecialchars($phone) . '</td>
+        </tr>
+        <tr>
+            <td><strong>Destination:</strong></td>
+            <td>' . htmlspecialchars($title) . '</td>
+        </tr>
+        <tr>
+            <td><strong>Date:</strong></td>
+            <td>' . htmlspecialchars($date) . '</td>
+        </tr>
+        <tr>
+            <td><strong>People:</strong></td>
+            <td>' . (int)$people . '</td>
+        </tr>
+        <tr>
+            <td><strong>Total Price:</strong></td>
+            <td>$' . number_format($total, 2) . '</td>
+        </tr>
+        <tr>
+            <td><strong>Channel:</strong></td>
+            <td>' . htmlspecialchars($channel) . '</td>
+        </tr>
+    </table>
+    <p>Check the dashboard for full details.</p>
+</div>';
+
+    sendMail('mfd84739@gmail.com', "🧾 New Booking - $name", $adminBody);
 
     echo json_encode(['success' => true, 'message' => 'Booking saved successfully']);
 } catch (Exception $e) {

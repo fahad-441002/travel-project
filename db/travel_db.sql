@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jul 10, 2025 at 03:59 PM
+-- Generation Time: Jul 20, 2025 at 12:31 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.2.26
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `bookings`;
 CREATE TABLE IF NOT EXISTS `bookings` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
+  `user_id` int DEFAULT NULL,
   `destination_slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `destination_title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -42,26 +42,39 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `status` enum('Pending','Confirmed','Cancelled') COLLATE utf8mb4_unicode_ci DEFAULT 'Pending',
   `reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `guest_id` int DEFAULT NULL,
+  `agent_message` text COLLATE utf8mb4_unicode_ci,
+  `source` enum('site','chatbot','agent') COLLATE utf8mb4_unicode_ci DEFAULT 'site',
+  `channel` enum('book_now','talk_to_agent') COLLATE utf8mb4_unicode_ci DEFAULT 'book_now',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  KEY `destination_slug` (`destination_slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `destination_slug` (`destination_slug`),
+  KEY `fk_guest` (`guest_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `bookings`
 --
 
-INSERT INTO `bookings` (`id`, `user_id`, `destination_slug`, `destination_title`, `phone`, `travel_date`, `persons`, `amount`, `total_price`, `message`, `status`, `reason`, `created_at`) VALUES
-(1, 1, 'explore-paris', 'Explore Paris', '03247684739', '2025-07-09', 2, 1499.00, 2998.00, '123', 'Confirmed', NULL, '2025-07-09 20:36:56'),
-(2, 1, 'explore-paris', 'Explore Paris', '123123', '2025-07-09', 1, 1499.00, 1499.00, '', 'Cancelled', '213213', '2025-07-09 20:37:53'),
-(3, 1, 'explore-paris', 'Explore Paris', '123123', '2025-07-09', 1, 1499.00, 1499.00, '123123', 'Confirmed', NULL, '2025-07-09 20:40:15'),
-(4, 2, 'explore-paris', 'Explore Paris', '03117912563', '2025-07-09', 1, 1499.00, 1499.00, '12323', 'Pending', NULL, '2025-07-09 21:31:00'),
-(5, 1, 'discover-sydney', 'Discover Sydney', '03247684739', '2025-07-09', 5, 1399.00, 6995.00, '21213', 'Pending', NULL, '2025-07-09 21:47:16'),
-(6, 1, 'discover-sydney', 'Discover Sydney', '03247684739', '2025-07-09', 5, 1399.00, 6995.00, '21213', 'Pending', NULL, '2025-07-09 21:51:42'),
-(7, 1, 'discover-italy', 'Discover Italy', '03117912563', '2025-07-09', 1, 1499.00, 1499.00, '12313', 'Pending', NULL, '2025-07-09 21:54:31'),
-(8, 1, 'explore-new-york-city', 'Explore New York City', '03117912563', '2025-07-09', 1, 1099.00, 1099.00, 'asds', 'Cancelled', 'asda', '2025-07-09 21:56:51'),
-(9, 3, 'autralia', 'Autralia', '03247684739', '2025-07-10', 5, 2000.00, 10000.00, 'asdasd', 'Pending', NULL, '2025-07-10 15:30:53'),
-(10, 4, 'discover-italy', 'Discover Italy', '03247684739', '2025-07-10', 10, 1499.00, 14990.00, '', 'Confirmed', NULL, '2025-07-10 15:34:36');
+INSERT INTO `bookings` (`id`, `user_id`, `destination_slug`, `destination_title`, `phone`, `travel_date`, `persons`, `amount`, `total_price`, `message`, `status`, `reason`, `created_at`, `guest_id`, `agent_message`, `source`, `channel`) VALUES
+(1, 1, 'explore-paris', 'Explore Paris', '03247684739', '2025-07-09', 2, 1499.00, 2998.00, '123', 'Confirmed', NULL, '2025-07-09 20:36:56', NULL, NULL, 'site', 'book_now'),
+(2, 1, 'explore-paris', 'Explore Paris', '123123', '2025-07-09', 1, 1499.00, 1499.00, '', 'Cancelled', '213213', '2025-07-09 20:37:53', NULL, NULL, 'site', 'book_now'),
+(3, 1, 'explore-paris', 'Explore Paris', '123123', '2025-07-09', 1, 1499.00, 1499.00, '123123', 'Confirmed', NULL, '2025-07-09 20:40:15', NULL, NULL, 'site', 'book_now'),
+(4, 2, 'explore-paris', 'Explore Paris', '03117912563', '2025-07-09', 1, 1499.00, 1499.00, '12323', 'Pending', NULL, '2025-07-09 21:31:00', NULL, NULL, 'site', 'book_now'),
+(5, 1, 'discover-sydney', 'Discover Sydney', '03247684739', '2025-07-09', 5, 1399.00, 6995.00, '21213', 'Pending', NULL, '2025-07-09 21:47:16', NULL, NULL, 'site', 'book_now'),
+(6, 1, 'discover-sydney', 'Discover Sydney', '03247684739', '2025-07-09', 5, 1399.00, 6995.00, '21213', 'Pending', NULL, '2025-07-09 21:51:42', NULL, NULL, 'site', 'book_now'),
+(7, 1, 'discover-italy', 'Discover Italy', '03117912563', '2025-07-09', 1, 1499.00, 1499.00, '12313', 'Pending', NULL, '2025-07-09 21:54:31', NULL, NULL, 'site', 'book_now'),
+(8, 1, 'explore-new-york-city', 'Explore New York City', '03117912563', '2025-07-09', 1, 1099.00, 1099.00, 'asds', 'Cancelled', 'asda', '2025-07-09 21:56:51', NULL, NULL, 'site', 'book_now'),
+(9, 3, 'autralia', 'Autralia', '03247684739', '2025-07-10', 5, 2000.00, 10000.00, 'asdasd', 'Pending', NULL, '2025-07-10 15:30:53', NULL, NULL, 'site', 'book_now'),
+(10, 4, 'discover-italy', 'Discover Italy', '03247684739', '2025-07-10', 10, 1499.00, 14990.00, '', 'Confirmed', NULL, '2025-07-10 15:34:36', NULL, NULL, 'site', 'book_now'),
+(11, NULL, NULL, 'Actual Custom Destination', '', '2023-12-31', 3, 150.00, 450.00, NULL, 'Pending', NULL, '2025-07-20 11:21:59', 2, NULL, 'chatbot', 'book_now'),
+(12, NULL, 'explore-paris', '', '', '2025-12-12', 5, 1499.00, 7495.00, NULL, 'Pending', NULL, '2025-07-20 11:23:44', 3, NULL, 'chatbot', 'book_now'),
+(13, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:19:33', 9, NULL, 'chatbot', 'book_now'),
+(14, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:20:27', 10, NULL, 'chatbot', 'book_now'),
+(15, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:20:50', 11, NULL, 'chatbot', 'book_now'),
+(16, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:22:44', 12, NULL, 'chatbot', 'book_now'),
+(17, NULL, 'experience-tokyo', '', '', '2025-12-12', 5, 1299.00, 6495.00, NULL, 'Pending', NULL, '2025-07-20 12:23:54', 13, NULL, 'chatbot', 'book_now'),
+(18, NULL, 'explore-new-york-city', '', '', '2025-12-12', 4, 1099.00, 4396.00, NULL, 'Pending', NULL, '2025-07-20 12:26:34', 14, NULL, 'chatbot', 'book_now');
 
 -- --------------------------------------------------------
 
@@ -86,6 +99,37 @@ CREATE TABLE IF NOT EXISTS `contact_messages` (
 INSERT INTO `contact_messages` (`id`, `name`, `email`, `message`, `created_at`) VALUES
 (1, 'New User', 'fahaduser@gmail.com', 'asdasd', '2025-07-09 22:13:38'),
 (2, 'New User', 'fahaduser@gmail.com', 'asdasd', '2025-07-09 22:14:47');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `custom_bookings`
+--
+
+DROP TABLE IF EXISTS `custom_bookings`;
+CREATE TABLE IF NOT EXISTS `custom_bookings` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `guest_id` int DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `custom_destination` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `travel_date` date DEFAULT NULL,
+  `people` int DEFAULT NULL,
+  `message` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `guest_id` (`guest_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `custom_bookings`
+--
+
+INSERT INTO `custom_bookings` (`id`, `user_id`, `guest_id`, `name`, `email`, `phone`, `custom_destination`, `travel_date`, `people`, `message`, `created_at`) VALUES
+(1, NULL, 5, 'Fahad', '', '03247684739', 'full', '2025-12-22', 5, 'Ys new', '2025-07-20 11:46:28');
 
 -- --------------------------------------------------------
 
@@ -133,6 +177,72 @@ INSERT INTO `destinations` (`id`, `slug`, `title`, `description`, `second_title`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `destination_highlights`
+--
+
+DROP TABLE IF EXISTS `destination_highlights`;
+CREATE TABLE IF NOT EXISTS `destination_highlights` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `destination_id` int NOT NULL,
+  `video_title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `video_description` text COLLATE utf8mb4_unicode_ci,
+  `video_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `video_type` enum('youtube','mp4') COLLATE utf8mb4_unicode_ci DEFAULT 'youtube',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `destination_id` (`destination_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `destination_highlights`
+--
+
+INSERT INTO `destination_highlights` (`id`, `destination_id`, `video_title`, `video_description`, `video_url`, `video_type`, `created_at`) VALUES
+(7, 8, 'Paris: City of Love', 'Walk the romantic streets of Paris, from the Eiffel Tower to quaint cafés and vibrant markets.', 'https://www.youtube.com/embed/Scxs7L0vhZ4', 'youtube', '2025-07-18 17:42:28'),
+(8, 9, 'Romance & History in Italy', 'Explore Rome’s Colosseum, Venice’s canals, and Tuscany’s landscapes in this cultural Italian journey.', 'https://www.youtube.com/embed/9h2sC1DOO5I', 'youtube', '2025-07-18 17:43:04'),
+(9, 10, 'NYC in Motion', 'Feel the energy of Times Square, Central Park, and Manhattan\'s skyline in this cinematic New York experience.', 'https://www.youtube.com/embed/vtpk6n2nH8A', 'youtube', '2025-07-18 17:43:32'),
+(10, 11, 'Tokyo: Tradition Meets Technology', 'From cherry blossoms to neon-lit skyscrapers, Tokyo is a city where the past and future collide in harmony.', 'https://www.youtube.com/', 'youtube', '2025-07-18 17:44:09'),
+(11, 12, 'Iconic Views of Sydney', 'Take in the Sydney Opera House, Harbour Bridge, and Bondi Beach in this scenic journey across Australia’s gem.', 'https://www.youtube.com/embed/nZgnZK2LrrY', 'youtube', '2025-07-18 17:44:34'),
+(12, 13, 'Discover Futuristic Dubai', 'From Burj Khalifa to desert safaris, experience the luxury and innovation of Dubai in this unforgettable adventure.', 'https://www.youtube.com/embed/uwM2eJ44F5I', 'youtube', '2025-07-18 17:45:02');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `guest_users`
+--
+
+DROP TABLE IF EXISTS `guest_users`;
+CREATE TABLE IF NOT EXISTS `guest_users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `guest_users`
+--
+
+INSERT INTO `guest_users` (`id`, `name`, `email`, `phone`, `created_at`) VALUES
+(2, 'Actual Name', 'actual.email@example.com', '', '2025-07-20 11:21:59'),
+(3, 'Fahad', 'mfd84739@gmail.com', '', '2025-07-20 11:23:44'),
+(4, 'Fahd', NULL, '03247684739', '2025-07-20 11:37:00'),
+(5, 'Fahad', '', '03247684739', '2025-07-20 11:46:28'),
+(6, 'Fhad', 'fahadshd11@gmail.com', NULL, '2025-07-20 12:17:36'),
+(7, 'Fahad', 'fahadshd11@gmail.com', NULL, '2025-07-20 12:17:41'),
+(8, 'Fahad', 'mfd84739@gmail.com', NULL, '2025-07-20 12:18:10'),
+(9, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:19:33'),
+(10, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:20:27'),
+(11, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:20:50'),
+(12, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:22:44'),
+(13, 'fahad', 'mfd84739@gmail.com', '', '2025-07-20 12:23:54'),
+(14, 'Fahad', 'fahadshd11@gmail.com', '', '2025-07-20 12:26:34');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -167,7 +277,21 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `s
 -- Constraints for table `bookings`
 --
 ALTER TABLE `bookings`
-  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `fk_guest` FOREIGN KEY (`guest_id`) REFERENCES `guest_users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `custom_bookings`
+--
+ALTER TABLE `custom_bookings`
+  ADD CONSTRAINT `custom_bookings_ibfk_1` FOREIGN KEY (`guest_id`) REFERENCES `guest_users` (`id`),
+  ADD CONSTRAINT `custom_bookings_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `destination_highlights`
+--
+ALTER TABLE `destination_highlights`
+  ADD CONSTRAINT `destination_highlights_ibfk_1` FOREIGN KEY (`destination_id`) REFERENCES `destinations` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

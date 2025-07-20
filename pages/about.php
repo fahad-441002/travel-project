@@ -31,7 +31,7 @@
 
   <section class="team">
       <div class="container">
-          <h2>Meet Our Team</h2>
+          <h2 style="padding: 20px 0;">Meet Our Team</h2>
           <div class="team-members">
               <div class="member">
                   <img src="Assets\Images\person1.jpg" alt="John Doe">
