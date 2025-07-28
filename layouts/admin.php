@@ -1,4 +1,5 @@
 <?php
+
 $base = '/hassan';
 $pageTitle = $pageTitle ?? 'Dashboard';
 ?>
@@ -224,6 +225,12 @@ $pageTitle = $pageTitle ?? 'Dashboard';
         document.getElementById('sidebarToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('show');
         });
+
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
     </script>
 
 </body>
