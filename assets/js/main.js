@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   let destinations = {};
 
-  fetch('/hassan/api/get-destinations')
+  fetch('/hassan/api/get-destinations.php')
     .then(res => res.json())
     .then(data => {
       console.log("Destinations loaded:", data);

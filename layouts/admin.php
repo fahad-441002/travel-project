@@ -196,7 +196,7 @@ $pageTitle = $pageTitle ?? 'Dashboard';
                         <li><a class="dropdown-item"
                                 href="<?= $_SESSION['user']['role'] === 'admin' ? $base . '/admin/setting/profile' : $base . '/user/setting/profile' ?>">Settings</a>
                         </li>
-                        <li><a class="dropdown-item" href="<?= $base ?>/logout">Logout</a></li>
+                        <li><a class="dropdown-item" href="<?= $base ?>/logout.php">Logout</a></li>
                     </ul>
                 </div>
             </div>

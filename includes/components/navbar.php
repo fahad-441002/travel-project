@@ -25,7 +25,7 @@
                                     Settings
                                 </a>
                             </li>
-                            <li><a href="<?= $base; ?>/logout">Logout</a></li>
+                            <li><a href="<?= $base; ?>/logout.php">Logout</a></li>
                         </ul>
                     </div>
                 </li>
