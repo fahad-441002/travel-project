@@ -1,7 +1,7 @@
 <?php
 require_once 'config/db.php';
 
-ini_set('display_errors', 0); // don't show errors to users
+ini_set('display_errors', 1); // don't show errors to users
 ini_set('log_errors', 1);     // log all errors
 ini_set('error_log', __DIR__ . 'logs/error.log'); // log file path
 error_reporting(E_ALL);       // report all errors
@@ -36,7 +36,7 @@ if (preg_match('#^destination/([^/]+)$#', $request, $matches)) {
     $pageTitle = $destination['title'];
     $contentFile = "pages/destination/index.php"; // Your display page
 
-    require_once 'layouts/main.php';
+    require 'layouts/main.php';
     exit;
 }
 

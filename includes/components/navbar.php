@@ -35,14 +35,3 @@
         </ul>
     </div>
 </nav>
-
-<script>
-    function toggleMobileMenu() {
-        document.getElementById('navLinks').classList.toggle('show');
-    }
-
-    function toggleDropdown() {
-        const dropdown = document.getElementById("userDropdown");
-        dropdown.classList.toggle("open");
-    }
-</script>

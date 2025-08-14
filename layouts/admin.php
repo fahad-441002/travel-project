@@ -1,5 +1,4 @@
 <?php
-
 $base = '/hassan';
 $pageTitle = $pageTitle ?? 'Dashboard';
 ?>

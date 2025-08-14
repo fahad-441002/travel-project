@@ -9,7 +9,6 @@ $metaDescription = "Best travel packages and tour management.";
 $metaKeywords = "travel, tour, booking, vacation";
 
 $bookSlug = $_GET['book'] ?? null;
-
 // If not logged in, redirect to login with return
 if ($bookSlug && !isset($_SESSION['user'])) {
     header('Location: login?redirectTo=' . urlencode('book=' . $bookSlug));

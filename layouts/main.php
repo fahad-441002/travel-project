@@ -1,7 +1,4 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 $base = '/hassan';
 ?>
 
@@ -23,8 +20,7 @@ $base = '/hassan';
 </head>
 
 <body>
-    <?php require 'includes/components/navbar.php'; ?>
-
+    <?= require_once 'includes/components/navbar.php'; ?>
     <main>
         <!-- Chatbot Icon -->
         <div class="chatbot-icon" id="chatbot-icon">
@@ -73,7 +69,7 @@ $base = '/hassan';
         <?php require_once $contentFile; ?>
     </main>
 
-    <?php require 'includes/components/footer.php'; ?>
+    <?php require_once 'includes/components/footer.php'; ?>
 
     <script>
         // Toggle dropdown
@@ -94,6 +90,16 @@ $base = '/hassan';
                 window.location.reload();
             }
         };
+    </script>
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('navLinks').classList.toggle('show');
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById("userDropdown");
+            dropdown.classList.toggle("open");
+        }
     </script>
 </body>
 
