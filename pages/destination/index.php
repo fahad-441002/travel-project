@@ -11,7 +11,7 @@
 
     <ul>
         <li><?= $destination['features'] ?></li>
-        <li>💰 <strong>Price: $<?= number_format($destination['price'], 2) ?> per person</strong></li>
+        <li>💰 <strong>Price: Rs <?= number_format($destination['price'], 2) ?> per person</strong></li>
     </ul>
 
     <a href="<?= $base ?>?book=<?= urlencode($destination['slug']) ?>" class="book-button">Book Now</a>

@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $base = '/hassan';
 ?>
 
@@ -20,7 +23,7 @@ $base = '/hassan';
 </head>
 
 <body>
-    <?= require_once 'includes/components/navbar.php'; ?>
+    <?php require_once 'includes/components/navbar.php'; ?>
     <main>
         <!-- Chatbot Icon -->
         <div class="chatbot-icon" id="chatbot-icon">

@@ -48,33 +48,33 @@ while ($d = $allDestinations->fetch_assoc()) {
         <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
                 <td><?= $row['id'] ?></td>
-                <td><?= htmlspecialchars($row['user_name']) ?></td>
-                <td><?= htmlspecialchars($row['destination_title'] ?: $row['real_destination_title']) ?></td>
+                <td><?= $row['user_name'] ?></td>
+                <td><?= $row['destination_title'] ?: $row['real_destination_title'] ?></td>
                 <td><?= $row['persons'] ?></td>
-                <td>$<?= number_format($row['total_price'], 2) ?></td>
+                <td>Rs <?= number_format($row['total_price'], 2) ?></td>
                 <td><?= $row['travel_date'] ?></td>
                 <td>
                     <span class="badge bg-<?= $row['status'] === 'Confirmed' ? 'success' : ($row['status'] === 'Cancelled' ? 'danger' : 'warning') ?>">
                         <?= $row['status'] ?>
                     </span>
                 </td>
-                <td><?= htmlspecialchars($row['source']) ?></td>
-                <td><?= htmlspecialchars($row['channel']) ?></td>
+                <td><?= $row['source'] ?></td>
+                <td><?= $row['channel'] ?></td>
                 <td>
                     <button class="btn btn-sm btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#viewModal"
                         data-id="<?= $row['id'] ?>"
-                        data-user="<?= htmlspecialchars($row['user_name']) ?>"
-                        data-email="<?= htmlspecialchars($row['user_email']) ?>"
-                        data-phone="<?= htmlspecialchars($row['user_phone']) ?>"
-                        data-destination="<?= htmlspecialchars($row['destination_title'] ?: $row['real_destination_title']) ?>"
+                        data-user="<?= $row['user_name'] ?>"
+                        data-email="<?= $row['user_email'] ?>"
+                        data-phone="<?= $row['user_phone'] ?>"
+                        data-destination="<?= $row['destination_title'] ?: $row['real_destination_title'] ?>"
                         data-persons="<?= $row['persons'] ?>"
                         data-price="<?= $row['total_price'] ?>"
                         data-date="<?= $row['travel_date'] ?>"
                         data-status="<?= $row['status'] ?>"
-                        data-message="<?= htmlspecialchars($row['agent_message']) ?>"
-                        data-reason="<?= htmlspecialchars($row['reason']) ?>">
+                        data-message="<?= $row['agent_message'] ?>"
+                        data-reason="<?= $row['reason'] ?>">
                         View/Edit
                     </button>
                 </td>
@@ -102,7 +102,7 @@ while ($d = $allDestinations->fetch_assoc()) {
                         <label>Destination</label>
                         <select name="destination_slug" id="booking-destination" class="form-select" required>
                             <?php foreach ($destMap as $slug => $d): ?>
-                                <option value="<?= $slug ?>"><?= htmlspecialchars($d['title']) ?></option>
+                                <option value="<?= $slug ?>"><?= $d['title'] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -133,7 +133,7 @@ while ($d = $allDestinations->fetch_assoc()) {
                     </div>
 
                     <div>
-                        <strong>Total Price:</strong> $<span id="booking-price">0.00</span>
+                        <strong>Total Price:</strong> Rs <span id="booking-price">0.00</span>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -35,16 +35,16 @@ $result = $conn->query($sql);
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>
                             <td><?= $row['id'] ?></td>
-                            <td><?= htmlspecialchars($row['name']) ?></td>
-                            <td><?= htmlspecialchars($row['email']) ?></td>
-                            <td><?= htmlspecialchars($row['phone']) ?></td>
-                            <td><?= htmlspecialchars($row['custom_destination']) ?></td>
+                            <td><?= $row['name'] ?></td>
+                            <td><?= $row['email'] ?></td>
+                            <td><?= $row['phone'] ?></td>
+                            <td><?= $row['custom_destination'] ?></td>
                             <td><?= $row['travel_date'] ?></td>
                             <td><?= $row['people'] ?></td>
                             <td>
-                                <?= $row['user_id'] ? "User: " . htmlspecialchars($row['user_name']) : "Guest: " . htmlspecialchars($row['guest_name']) ?>
+                                <?= $row['user_id'] ? "User: " . $row['user_name'] : "Guest: " . $row['guest_name'] ?>
                             </td>
-                            <td><?= nl2br(htmlspecialchars($row['message'])) ?></td>
+                            <td><?= nl2br($row['message']) ?></td>
                             <td><?= $row['created_at'] ?></td>
                         </tr>
                     <?php endwhile; ?>

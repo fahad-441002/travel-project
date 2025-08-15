@@ -28,8 +28,8 @@ $highlights = $conn->query("SELECT destination_highlights.*, destinations.title 
             <?php while ($row = $highlights->fetch_assoc()): ?>
                 <tr>
                     <td><?= $row['id'] ?></td>
-                    <td><?= htmlspecialchars($row['destination_title']) ?></td>
-                    <td><?= htmlspecialchars($row['video_title']) ?></td>
+                    <td><?= $row['destination_title'] ?></td>
+                    <td><?= $row['video_title'] ?></td>
                     <td><?= $row['video_type'] ?></td>
                     <td>
                         <?php if ($row['video_type'] === 'youtube'): ?>

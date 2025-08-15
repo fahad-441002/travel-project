@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
             </tr>
             <tr>
                 <td><strong>Total Price:</strong></td>
-                <td>$' . number_format($bookingData['total_price'], 2) . '</td>
+                <td>Rs ' . number_format($bookingData['total_price'], 2) . '</td>
             </tr>
             <tr>
                 <td><strong>Status:</strong></td>
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
             </tr>
             <tr>
                 <td><strong>Total:</strong></td>
-                <td>$' . number_format($bookingData['total_price'], 2) . '</td>
+                <td>Rs ' . number_format($bookingData['total_price'], 2) . '</td>
             </tr>
             <tr>
                 <td><strong>Message:</strong></td>
@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
             <div class="dest-item">
                 <img src="<?= $base . htmlspecialchars($destination['background_image']) ?>" alt="<?= htmlspecialchars($destination['title']) ?>">
                 <h3><?= htmlspecialchars($destination['title']) ?></h3>
-                <p class="price"><strong>Price:</strong> $<?= number_format($destination['price'], 2) ?></p>
+                <p class="price"><strong>Price:</strong> Rs <?= number_format($destination['price'], 2) ?></p>
                 <a href="<?= $base ?>/destination/<?= urlencode($destination['slug']) ?>" class="btn">View details</a>
             </div>
         <?php endforeach; ?>
@@ -256,8 +256,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
 
                     infoBox.innerHTML = `
     <p><strong>Duration:</strong> ${duration} Days Tour</p>
-    <p><strong>Price per person:</strong> $${price.toFixed(2)}</p>
-    <p><strong>Total for ${persons}:</strong> $${total}</p>
+    <p><strong>Price per person:</strong> Rs ${price.toFixed(2)}</p>
+    <p><strong>Total for ${persons}:</strong> Rs ${total}</p>
     `;
                 } else {
                     infoBox.innerHTML = '';

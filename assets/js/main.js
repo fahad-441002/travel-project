@@ -184,8 +184,8 @@ function initChatbot(destinations) {
         <strong>🧳 Trip Summary</strong><br>
         <strong>Destination:</strong> ${dest.name}<br>
         <strong>Duration:</strong> ${dest.duration}<br>
-        <strong>Price per person:</strong> $${dest.price.toLocaleString()}<br>
-        <strong>Total for ${userData.people}:</strong> <span style="color:green;">$${totalPrice.toLocaleString()}</span>
+        <strong>Price per person:</strong> Rs ${dest.price.toLocaleString()}<br>
+        <strong>Total for ${userData.people}:</strong> <span style="color:green;">Rs ${totalPrice.toLocaleString()}</span>
       `);
       askDate();
     });
@@ -317,7 +317,7 @@ function initChatbot(destinations) {
         ${userData.phone ? `<strong>Phone:</strong> ${userData.phone}<br>` : ''}
         <strong>Destination:</strong> ${destinationName}<br>
         <strong>Travel Date:</strong> ${userData.date}<br>
-        <strong>Total Price:</strong> $${(price * userData.people).toLocaleString()}
+        <strong>Total Price:</strong> Rs ${(price * userData.people).toLocaleString()}
       `);
           addMessage("📧 You'll receive a confirmation shortly. Thank you for booking with us!");
         } else {

@@ -36,8 +36,8 @@ $users = $result->fetch_all(MYSQLI_ASSOC);
         <?php foreach ($users as $user): ?>
             <tr>
                 <td><?= $user['id'] ?></td>
-                <td><?= htmlspecialchars($user['name']) ?></td>
-                <td><?= htmlspecialchars($user['email']) ?></td>
+                <td><?= $user['name'] ?></td>
+                <td><?= $user['email'] ?></td>
                 <td><?= $user['role'] ?></td>
                 <td>
                     <form method="post" class="d-flex align-items-center">
