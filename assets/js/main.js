@@ -195,24 +195,26 @@ function initChatbot(destinations) {
     addTyping(() => {
       addMessage("When do you plan to travel?");
       showInput("date", "Choose travel date", (val) => {
-        // Validate that year is 4 digits
         if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) {
-          addMessage("❌ Please use the format YYYY‑MM‑DD");
+          addMessage("❌ Please use the format YYYY-MM-DD");
           askDate();
           return;
         }
+
         const selected = new Date(val);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+
+        // ❌ reject past dates
         if (selected < today) {
           addMessage("❌ Please select today or a future date.");
           askDate();
           return;
         }
+
         userData.date = val;
         askFinalChoice();
-      }, true);
-
+      }, true); // true = future only
     });
   };
 
@@ -394,6 +396,32 @@ function initChatbot(destinations) {
     });
   };
 
+  const askManuallyDate = () => {
+    addTyping(() => {
+      addMessage("When do you plan to travel?");
+      showInput("date", "Choose travel date", (val) => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+          addMessage("❌ Please use the format YYYY-MM-DD");
+          askManuallyDate();
+          return;
+        }
+
+        const selected = new Date(val);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // ❌ reject past dates
+        if (selected < today) {
+          addMessage("❌ Please select today or a future date.");
+          askManuallyDate();
+          return;
+        }
+
+        userData.date = val;
+      }, true); // true = future only
+    });
+  };
+
   const handleAgentCustomContact = () => {
     addMessage("Okay! We'll collect a few details to connect you with a travel agent.");
 
@@ -466,7 +494,7 @@ function initChatbot(destinations) {
             });
           });
         });
-      });
+      }, true);
     });
   };
 
